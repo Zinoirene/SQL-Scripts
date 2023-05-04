@@ -1,0 +1,1128 @@
+SQL QUERIES
+
+
+use adventureworks2014
+use pyc
+
+SELECT STATEMENTS
+SELECT WORKERS.firstname,WORKERS.Lastname 
+FROM WORKERS;
+
+
+INSERT STATEMENT
+insert into Workers(firstname) values ('Tosin');
+insert into workers w(firstname) values ('Tosin');
+
+SELECT DISTINCT
+select distinct w.firstname from workers w;
+
+UPDATE STATEMENT
+update workers
+set DOB =17-05-1993
+where firstname='funmi'
+
+
+update WORKERS
+set age = 32
+where firstname='Tosin' and Lastname is null
+
+select w.firstname,w.lastname,w.dept
+from WORKERS w
+where w.firstname ='tosin' and age>27
+
+
+
+USING LIKE, AND & BETWEEN OPERATORS
+select w.firstname,w.lastname,w.dept
+from WORKERS w
+where w.firstname ='tosin' and age>27
+
+
+
+
+
+select w.firstname,w.lastname,w.city
+from workers w
+where w.dept='vocal dynamics' and age<33
+
+
+ 
+select w.firstname,w.lastname
+from WORKERS w
+where age between 23 and 25
+
+ 
+select w.firstname,w.lastname
+from WORKERS w
+where w.lastname like '%a%'
+
+
+ 
+select w.firstname,w.lastname
+from WORKERS w
+where w.firstname in ('tosin','funmi');
+
+select w.firstname,w.lastname
+from WORKERS w
+where w.lastname is null
+
+select w.firstname,w.lastname
+from WORKERS w
+order by w.firstname
+
+select w.firstname,w.lastname
+from WORKERS w
+order by w.age
+
+AGGREGATION
+select count(w.firstname)
+from WORKERS w
+
+
+select max(w.lastname)
+from WORKERS w
+
+
+select min(w.firstname)
+from WORKERS w
+
+update workers
+set lastname='zino'
+where Lastname is null
+
+
+select avg(w.age)
+from WORKERS w
+
+select sum(w.age)
+from WORKERS w
+
+
+select (w.age)
+from WORKERS w
+
+select w.firstname
+from WORKERS w
+GROUP BY w.firstname
+
+
+select count(W.FIRSTNAME)
+from WORKERS w
+GROUP BY w.firstname
+having w.firstname='tosin'
+
+
+select count(W.firstname)
+from WORKERS w
+GROUP BY w.firstname
+having count (w.firstname)>1;
+
+select count(W.firstname)
+from WORKERS w
+GROUP BY w.firstname
+having count w.firstname > 1;
+
+ 
+create table WorkersID(Firstname varchar(255),Lastname varchar(255),emailaddress varchar(255))
+
+INSERT INTO WorkersID values('tosin','ilesanmi','tosin.ilesanmi193@gmail.com'),
+('ayodeji','ogunleke','ayo.ogunleke@gmail.com'),
+('funmi','ogundipe','funmi.ogundipe@gmail.com');
+
+
+JOIN STATEMENT
+select e.firstname,e.lastname
+from emailaddress e
+inner join staffs on e.ID=STAFFS.ID
+
+select e.firstname,e.lastname
+from emailaddress e
+right join staffs s on e.ID=s.ID
+
+select * from workers
+
+alter table workers
+Alter ID INT PRIMARY KEY
+
+ALTER TABLE WORKERS
+DROP COLUMN ID 
+
+
+
+
+create table accountdetails 
+(ID INT NOT NULL PRIMARY KEY,Firstname varchar(255),Lastname varchar(255),Accountnumber int not null,Bank varchar(255)
+CONSTRAINT UC_ACCOUNTDETAILS UNIQUE (ID,ACCOUNTNUMBER));
+
+alter table accountdetails
+add unique(firstname)
+
+
+rollback
+alter table accountdetails
+ADD CONSTRAINTS UC_ACCOUNTDETAILS(ID,accountnumber);
+
+create table FinancialInfo 
+(ID INT NOT NULL,Fname varchar(255),lname varchar(255),ACCOUNTNO int not null,Bankname varchar(255)
+CONSTRAINT PK_FinancialInfo primary key (ID,ACCOUNTNO));
+
+
+
+
+
+begin transaction
+update Production.product
+set SellEndDate='12/07/09',ModifiedDate=getdate()
+where ProductID=1
+rollback
+
+
+
+
+
+
+
+--INNER JOIN EXERCISE
+Select p.Name,p.Productnumber,p.color,i.shelf,i.LocationID 
+from Production.product p inner join 
+Production.ProductInventory i 
+on p.ProductID =i.ProductID
+
+--UPDATE WITH FROM STATEMENT
+update p
+set color='indigo'
+from Production.product p inner join 
+Production.ProductInventory i 
+on p.ProductID =i.ProductID
+where color is not null
+ROLLBACK
+
+select * from Production.Scrapreason
+
+--What is the last modified date
+select emailaddress,modifieddate
+from Person.emailaddress
+where BusinessEntityID=18935
+
+--Update without designating default keyword
+update Person.EmailAddress
+set EmailAddress='chelsea77@adventure-works.com'
+where BusinessEntityID=18935
+
+--Update with DEFAULT keyword
+update Person.EmailAddress
+set EmailAddress='chelsea77@adventure-works.com',ModifiedDate=default
+where BusinessEntityID=18935
+
+--Did the modified date change?
+select emailaddress,modifieddate
+from Person.emailaddress
+where BusinessEntityID=18935
+--Yes it did
+
+
+--COMPOUND ASSIGNMENT OPERATORS
+--What is the quantity for each row?
+ 
+--Double the quantity
+update Production.ProductInventory
+set quantity*=2
+where ProductID=316
+
+--What is the mininum list price of a Specific product
+select min(listprice) as minlistprice
+from Production.ProductListPriceHistory
+where ProductID=707
+
+--Checking the table Product list price history itself
+select * from Production.ProductListPriceHistory
+
+--Check the current list price of another product
+select listprice
+from Production.ProductListPriceHistory
+where ProductID=708 and EndDate is null
+
+--Update 708 with the minimum price of 707
+Update Production.ProductListPriceHistory
+set ListPrice=(select listprice
+               from Production.ProductListPriceHistory
+               where ProductID=959 and EndDate is null)
+where ProductID=707
+
+--Check if the Product 707 has been updated
+select listprice
+from Production.ProductListPriceHistory
+where ProductID=707 and EndDate is null
+
+--Will both match
+select min(listprice) as minlistprice
+from Production.ProductListPriceHistory
+where ProductID=707
+
+select listprice
+ from Production.ProductListPriceHistory
+ where ProductID=959 and EndDate is null
+
+
+ --Updating Views
+ --Check the definition of the view
+ exec sys.sp_helptext 'Sales.vSalesperson';
+
+ --Checking the view itself
+  select * from sales.vSalesperson
+
+ --Checking the tables used in the Sales.vSalesperson's view
+ select * from sales.Salesperson
+ select * from HumanResources.Employee
+ select * from Person.Person
+ select * from Sales.SalesTerritory
+  select * from Person.BusinessEntityAddress
+  select * from Person.Address
+ select * from Person.StateProvince
+select * from Person.EmailAddress
+select * from Person.PersonPhone
+select * from Person.PhoneNumberType
+
+use Adventureworks2014
+exec sys.sp_helptext 'humanresources.vemployeedepartment';
+
+--DELETE STATEMENT
+--First Step;Create a table for Human resources using the SELECT INTO STATEMENT
+Select businessentityid,
+	   nationalidnumber,
+	   loginid,
+	   organizationnode,
+	   organizationlevel,
+	   jobtitle,
+	   birthdate,
+	   maritalstatus,
+	   gender,
+	   hiredate,
+	   salariedflag,
+	   vacationhours,
+	   sickleavehours,
+	   currentflag,
+	   rowguid,
+	   modifieddate
+into Humanresources.v2employee
+from humanresources.employee
+
+select count(*) as row
+from humanresources.v2employee;
+
+delete HumanResources.v2employee
+
+--DELETE USING THE WHERE, FROM CLAUSE.THIS IMPLIES DELETING FROM TWO DIFFERENT TABLES
+select * from Person.businessentitycontact
+select * from sales.store
+
+--SELECT WHICH ROWS TO DELETE FROM
+select bec.businessentityid,s.name
+from person.BusinessEntityContact bec inner join
+sales.store s on bec.BusinessEntityID=s.businessentityid
+where s.name in ('Riders company','The Bike Mechanics');
+
+--DELETE THE SPECIFIED ROWS
+delete bec
+from person.BusinessEntityContact bec inner join
+sales.store s on bec.BusinessEntityID=s.businessentityid
+where s.name in ('Riders company','The Bike Mechanics');
+
+--VALIDATE WHICH ROWS WERE DELETED
+select bec.businessentityid,s.name
+from person.BusinessEntityContact bec inner join
+sales.store s on bec.BusinessEntityID=s.businessentityid
+where s.name in ('Riders company','The Bike Mechanics');
+
+--TRUNCATE VS DELETE COMMAND
+--Create a new table Purchasingorderdetailv3
+select Purchaseorderid,
+       purchaseorderdetailid,
+	   duedate,
+	   orderqty,
+	   unitprice,
+	   linetotal,
+	   receivedqty,
+	   rejectedqty,
+	   stockedqty,
+	   modifieddate
+into Purchasing.Purchasingorderdetailv2
+from Purchasing.PurchaseOrderDetail
+
+--Validate rows count
+select count(*) as row
+from Purchasing.Purchasingorderdetailv3
+
+select count(*) as row
+from Purchasing.PurchaseOrderDetail
+
+--CHECK RECOVERY MODEL OF THE SAMPLE DATABASE
+select recovery_model_desc
+from sys.databases
+where name = 'AdventureWorks2014';
+
+select recovery_model_desc
+from sys.databases
+where name = 'ZENITH';
+
+--Undocumented functions to read log records
+select [current lsn],
+       [Operation],
+	   [Context],
+	   [Transaction ID],
+	   [Log Record Fixed length],
+	   [Log Record Length]
+from   ::
+       fn_dblog(NULL,NULL);
+
+--validate rows count
+select count(*) as row
+from Purchasing.PurchaseOrderDetailv3
+
+--Deleting all records from Purchasing.Purchaseorderdetailv3
+Delete Purchasing.Purchasingorderdetailv3
+
+checkpoint 
+
+--TRUNCATE A TABLE
+truncate  table Purchasing.Purchasingorderdetailv2
+
+
+--BEYOND THE BASICS
+--Merge Statements
+
+--Lets Create a new Staging Table
+Select TransactionID,
+       ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Actualcost,
+	   Modifieddate,
+	   Quantity
+into Production.TransactionHistoryStaging
+From Production.TransactionHistory
+
+
+--Create some variations in the staging that must reflect in the live version
+delete Production.TransactionHistoryStaging
+where TransactionID between 100000 and 100004;
+
+--Let me even see what is in the staging version
+select * from Production.TransactionHistoryStaging
+
+update Production.TransactionHistoryStaging
+set Quantity=10,ModifiedDate=getdate()
+where TransactionID = 100019
+ Bqw
+--INSERT VALUES INTO A ROW
+Insert into Production.TransactionHistory(
+       ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate
+	   ) values
+	   (338,729952,9,'2021-08-18 16:47:33.040','s',99,0.21,getdate());
+
+
+
+SELECT * FROM Production.TransactionHistoryStaging
+SELECT * FROM Production.TransactionHistory
+
+
+--NOW PERFORM IUD ON Production.TransactionHistory 
+--Based on Production.TransactionHistoryStaging
+merge into Production.TransactionHistory as t
+using Production.TransactionHistorystaging as s
+on t.transactionID=s.TransactionID
+WHEN MATCHED AND
+( t.quantity=s.quantity)
+then 
+update
+set t.quantity=s.quantity,
+    t.modifieddate=s.modifieddate
+WHEN NOT MATCHED BY TARGET
+    THEN 
+INSERT(    ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate)values
+	   (s.ProductID,
+	   s.ReferenceOrderID,
+	   s.ReferenceOrderlineID,
+	   s.TransactionDate,
+	   s.TransactionType,
+	   s.Quantity,
+	   s.Actualcost,
+	   s.Modifieddate)
+WHEN NOT MATCHED BY SOURCE
+    THEN DELETE;
+
+select ModifiedDate,Quantity
+from Production.TransactionHistory
+where Quantity=10
+USE AdventureWorks2014
+
+select  ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate
+FROM Production.TransactionHistory
+except 
+select ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate
+from Production.TransactionHistoryStaging
+
+--COMMAND TO KNOW ALL MATCHING ROWS BETWEEN STAGING AND PRODUCTION
+select  ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate
+FROM Production.TransactionHistory
+intersect 
+select ProductID,
+	   ReferenceOrderID,
+	   ReferenceOrderlineID,
+	   TransactionDate,
+	   TransactionType,
+	   Quantity,
+	   Actualcost,
+	   Modifieddate
+from Production.TransactionHistoryStaging
+
+--DATA MODIFICATIONS WITH CTE'S(COMMON TABLE EXPRESSION)
+--The rows we wish to change using SQL OFFSET and FETCH
+with [cte_workorderid]
+as
+SELECT workorderid,
+       ProductID,
+	   OperationSequence,
+	   LocationID,
+	   ActualResourceHRs,
+	   PlannedCost,
+	   ActualCost,
+	   Modifieddate
+From Production.WorkOrderRouting
+order by WorkOrderID
+offset 50 rows
+fetch next 5 rows only;
+--the offset command actually selects a certain specified number of rows amongst others
+--The Update command cannot work with offset and fetch hence we use the CTE
+
+--CHECKING THE ORIGINAL TABLE
+select * from Production.WorkOrderRouting
+--USING CTE INSTEAD
+With cteWorkOrderRouting
+			  ([workorderid],
+	          [ProductID],
+	          [OperationSequence],
+	          [LocationID],
+	          [ActualResourceHRs],
+	          [PlannedCost],
+	          [ActualCost],
+	          [ModifiedDate])
+as
+      (select [workorderid],
+	          [ProductID],
+	          [OperationSequence],
+	          [LocationID],
+	          [ActualResourceHRs],
+	          [PlannedCost],
+	          [ActualCost],
+	          [ModifiedDate])
+FROM          [Production].[WorkOrderRouting]
+offset 50 rows
+order by WorkorderID
+fetch next 5 rows only)
+
+
+
+
+update [cte_workorderrouting]
+set actualcost*=1.2,Modifieddate=getdate();
+
+--Updating Large value data types
+--Table schema of Production.Document
+exec.sys.sp_help '[Production].[Document]'
+
+select * from Production.Document
+
+--nvarcharmaxdata type that we would be updating
+select Documentsummary
+from Production.Document
+where DocumentNode=0x7BC0;
+
+--Add description to end of current text
+Update Production.Document
+set [Documentsummary].write ('2020 update pending.',null,null)
+where DocumentNode=0x5B40;
+
+--After Validation
+select Documentsummary
+from Production.Document
+where DocumentNode=0x5B40;
+
+--Use Offset and length
+Update Production.Document
+set [Documentsummary].write ('pending review!.',0,0)
+where DocumentNode=0x5B40;
+
+Update Production.Document
+set [Documentsummary].write ('August!.',30,0)
+where DocumentNode=0x5B40;
+
+
+--After Validation
+select Documentsummary
+from Production.Document
+where DocumentNode=0x5B40;
+
+--Referencing Sequence objects
+Create sequence [dbo].[AdventureworksSequence]
+    as INT
+	start with 1
+	increment by 1
+	no cycle
+	no cache;
+
+CREATE TABLE [HumanResources].[Employeev2](
+	[BusinessEntityID] [int] NOT NULL PRIMARY KEY CLUSTERED,
+	[NationalIDNumber] [nvarchar](15) NOT NULL,
+	[LoginID] [nvarchar](256) NOT NULL,
+	[OrganizationNode] [hierarchyid] NULL,
+	[OrganizationLevel]  AS ([OrganizationNode].[GetLevel]()),
+	[JobTitle] [nvarchar](50) NOT NULL,
+	[BirthDate] [date] NOT NULL,
+	[MaritalStatus] [nchar](1) NOT NULL,
+	[Gender] [nchar](1) NOT NULL,
+	[HireDate] [date] NOT NULL,
+	[SalariedFlag] [dbo].[Flag] NOT NULL,
+	[VacationHours] [smallint] NOT NULL,
+	[SickLeaveHours] [smallint] NOT NULL,
+	[CurrentFlag] [dbo].[Flag] NOT NULL,
+	[rowguid] [uniqueidentifier] ROWGUIDCOL  NOT NULL,
+	[ModifiedDate] [datetime] NOT NULL)
+
+--Update the table Humanresources.Employeesv2 with values
+
+INSERT INTO [HumanResources].[Employeev2]
+           ([BusinessEntityID]
+           ,[NationalIDNumber]
+           ,[LoginID]
+           ,[OrganizationNode]
+           ,[JobTitle]
+           ,[BirthDate]
+           ,[MaritalStatus]
+           ,[Gender]
+           ,[HireDate]
+           ,[SalariedFlag]
+           ,[VacationHours]
+           ,[SickLeaveHours]
+           ,[CurrentFlag]
+           ,[rowguid]
+           ,[ModifiedDate])
+select next value for
+            [dbo].[AdventureworksSequence],
+           ([NationalIDNumber]
+           ,[LoginID]
+           ,[OrganizationNode]
+           ,[JobTitle]
+           ,[BirthDate]
+           ,[MaritalStatus]
+           ,[Gender]
+           ,[HireDate]
+           ,[SalariedFlag]
+           ,[VacationHours]
+           ,[SickLeaveHours]
+           ,[CurrentFlag]
+           ,[rowguid]
+           ,[ModifiedDate])
+from Humanresources.Employee;
+
+--INSERT WITH OUTPUT
+Insert into Production.UnitMeasure
+([UnitMeasureCode],[Name])
+output inserted.[UnitMeasureCode],inserted.[Name],inserted.ModifiedDate
+values ('apc','attoparsec')
+
+--This implies an insert,update or create statement that shows the output after the command has been applied.
+insert into Production.UnitMeasure 
+output inserted.UnitMeasureCode,inserted.Name,inserted.ModifiedDate
+values ('ac','auc',getdate())
+
+--DELETE WITH OUTPUT 
+Declare @DeletedunitMeasure Table
+       (
+	   [Unitmeasurecode] nchar(3),
+	   [Name] Nvarchar(50)
+	   );
+delete from Production.UnitMeasure
+Output Deleted.[UnitMeasureCode],
+       Deleted.[Name],
+       into @DeletedunitMeasure
+where [UnitMeasureCode]=N'ac';
+
+select [UnitMeasurecode],[name]
+from @DeletedunitMeasure
+
+use Adventureworks2014
+
+--QUERYING SQL SERVER 2012 NEW COURSE
+SELECT [Addressid]
+	 , [AddressLine1]
+	 ,[AddressLine2]
+	 , [City]
+FROM Person.Address
+
+
+
+SELECT City,
+       AddressID,
+	   AddressLine1,
+	   AddressLine2
+FROM   Person.Address;
+
+SELECT ProductLine,
+       Name
+FROM   Production.Product;
+
+--USING COLUMN ALIASES AND HAVING APOSTROPHES WITH THEM TO MAKE IT BOLDER
+SELECT NationalIDNumber as 'NID'
+     , BirthDate as 'B'
+FROM   HumanResources.Employee
+
+--USING THE + SIGN FOR STRING CONCATENATION(JOINING TWO COLUMNS TO FORM ONE)
+SELECT FirstName + ' ' + LastName AS FullName
+     , EmailPromotion
+FROM   Person.Person
+
+SELECT Name,
+       ListPrice
+FROM   Production.Product
+WHERE  ListPrice =9.50 or ListPrice= 3399.99;
+
+SELECT Name,
+	   ListPrice
+FROM   Production.Product
+WHERE  ListPrice >=100 and
+       ListPrice <=200;
+
+--USING THE WILDCARDS WITH THE LIKE CHARACTER
+SELECT Name,
+	   ListPrice
+FROM   Production.Product
+WHERE  Name like 'Mou%'
+
+--PERFORMING JOIN OPERATIONS 
+SELECT PC.Name AS 'CategoryName',
+       PS.Name AS 'SubcategoryName',
+	   PC.ProductCategoryID AS 'PCID',
+	   PS.ProductCategoryID AS 'PSID'
+FROM   Production.ProductCategory as PC
+       INNER JOIN Production.Productsubcategory as PS ON  PC.ProductcategoryID=PS.ProductcategoryID
+
+SELECT PP.FirstName +' '+ Lastname AS 'FullName',
+       PP.Title AS DESIGNATION,
+	   PPS.PasswordHash AS 'EMAILPASSWORD'
+FROM   Person.Person AS PP
+       INNER JOIN Person.Password AS PPS ON PP.BusinessEntityID=PPS.BusinessEntityID
+
+	   use adventureworks2014
+
+--OUTER JOIN
+SELECT PC.Name AS 'CategoryName',
+       PS.Name AS 'Subcategoryname'
+FROM   Production.ProductCategory as PC
+       LEFT OUTER JOIN Production.Productsubcategory AS PS 
+	   ON PC.ProductcategoryID=PS.ProductcategoryID
+	  
+--OUTER JOIN
+SELECT PC.Name AS 'CategoryName',
+       PS.Name AS 'Subcategoryname'
+FROM   Production.ProductCategory as PC
+       RIGHT OUTER JOIN Production.Productsubcategory AS PS 
+	   ON PC.ProductcategoryID=PS.ProductcategoryID
+
+
+SELECT lhs.BusinessEntityID AS 'lhs.businessentityid'
+      ,lhs.HireDate
+	  ,rhs.BusinessEntityID AS 'rhs.businessentityid'
+FROM   HumanResources.Employee lhs
+       INNER JOIN HumanResources.Employee rhs ON lhs.HireDate=rhs.HireDate
+											  AND lhs.BusinessEntityID<rhs.BusinessEntityID;
+
+--USING CROSS JOIN STATEMENTS
+SELECT P.Name,
+       E.HireDate AS 'ProductionHiredate',
+	   E.Jobtitle AS 'DESIGNATION',
+	   E.Gender   AS 'SEX'
+FROM   Production.Product as P,
+       HumanResources.Employee as E;
+
+--USING SUBQUERY IN THE SELECT LINE
+SELECT NAME,
+       ListPrice-(SELECT AVG(Listprice) FROM Production.Product)DifferencefromAverage
+FROM   Production.Product;
+
+SELECT NAME,
+       ListPrice-(SELECT COUNT(Listprice) FROM Production.Product)DifferencefromAverage
+FROM   Production.Product;
+
+--USING THE SUBQUERY IN THE FROM LINE
+SELECT P.Name,
+	   P.ListPrice-AP.AverageListPrice AS DifferencefromSubcategoryAverage
+FROM   Production.Product P
+       INNER JOIN (SELECT ProductsubcategoryID,AVG(ListPrice) as 'AverageListPrice'
+	               FROM Production.Product
+				   GROUP BY ProductSubcategoryID) AS ap
+				   ON P.ProductSubcategoryID=AP.ProductSubcategoryID
+
+--USING THE SUBQUERY IN THE WHERE LINE 
+  -- USING THE IN 
+SELECT C.Name,
+       C.ModifiedDate
+FROM   Person.ContactType AS C
+WHERE  C.ContactTID IN (SELECT SOH.CONTACTID
+                           FROM Sales.SalesOrderHeader AS SOH);
+
+--Create a new column for Person.Person 
+ALTER TABLE Person.person
+ADD         EMAILADDRESS VARCHAR;
+
+
+
+
+SELECT Firstname + ' ' + LastName AS 'FullName',
+       EmailAddress
+FROM   Person.Person
+UNION   --BY default this is distinct
+SELECT ReviewerName,
+       EmailAddress
+FROM   Production.ProductReview
+
+USE    ADVENTUREWORKS2014
+
+SELECT *FROM Sales.Customer
+
+SELECT PC.Name AS 'FULLNAME',
+       PC.ModifiedDate
+FROM   Person.ContactType AS PC
+WHERE  PC.ContactTypeID IN(SELECT ContactTypeID FROM Person.ContactType AS PC
+                           INNER JOIN Person.BusinessEntityContact AS PB ON PC.ContactTypeID=PB.ContactTypeID
+						   INNER JOIN Sales.Customer AS SC ON PB.PersonID=SC.PersonID
+						   INNER JOIN Sales.SalesOrderHeader AS SOH ON SC.CustomerID=SOH.CustomerID)
+
+USE    Adventureworks2014
+
+SELECT ISNULL(COLOR,'NONE') AS Color,
+       ISNULL(Size,'-') AS Size,
+	   FROM Sales.Product
+	   ORDER BY Color;
+
+
+SELECT * FROM Production.Product
+
+
+--USING AGGREGATE FUNCTIONS
+SELECT COUNT(*) AS 'TotalContacts'
+      ,COUNT(MiddleName) AS 'CONTACTSWITHMIDDLENAME'
+FROM   Person.Person
+
+SELECT   SUM(LISTPRICE),
+         COUNT(NAME)
+FROM     Production.Product
+
+SELECT   SUM(SOH.TOTALDUE) AS 'SALESAMOUNT',
+         ST.Name AS 'SalesTerritory',
+		 St.[Group] AS 'TerritoryGroup'
+FROM     Sales.salesorderheader AS SOH
+         INNER JOIN Sales.Salesterritory st ON SOH.TerritoryID=ST.TerritoryID
+GROUP BY ST.NAME,
+         st.[Group]
+
+
+--USING THE HAVING STATEMENT IN FUNCTIONS
+SELECT   SUM(SOH.TOTALDUE) AS 'SALESAMOUNT',
+         ST.Name AS 'SalesTerritory'
+FROM     Sales.salesorderheader AS SOH
+         INNER JOIN Sales.Salesterritory st ON SOH.TerritoryID=ST.TerritoryID
+GROUP BY ST.NAME
+HAVING   SUM(SOH.TOTALDUE) < 10000000;
+
+
+--UNDERSTANDING THE GROUP BY STATEMENT..GET THE TOTAL SALES PER TERRRITORY
+SELECT   SUM(SOH.TotalDue),
+         ST.Name AS 'TerritoryName',
+		 SOH.AccountNumber,
+		 ST.SalesLastYear
+FROM     Sales.SalesOrderHeader AS SOH 
+         INNER JOIN Sales.SalesTerritory ST ON SOH.TerritoryID=ST.TerritoryID
+WHERE    ST.Name IN ('Northwest','Southwest')
+GROUP BY ST.Name,SOH.AccountNumber,ST.SalesLastYear
+
+--UNDERSTANDING THE GROUP BY STATEMENT..GET THE TOTAL SALES PER TERRRITORY LAST YEAR
+SELECT INTO
+
+(SELECT   SUM(ST.SalesLastYear) AS 'TOTALSALESLASTYEAR',
+         ST.Name AS 'TerritoryName',
+		 SOH.AccountNumber
+FROM     Sales.SalesTerritory AS ST 
+         INNER JOIN Sales.Salesorderheader SOH ON ST.TerritoryID=SOH.TerritoryID
+WHERE ST.Name IN('Northwest','Southwest')
+GROUP BY ST.Name,SOH.AccountNumber
+HAVING   SUM(ST.SalesLastyear) >100000000)
+
+
+
+--CREATING A VIEW FOR SALES.VSALESBYCATEGORY
+
+CREATE VIEW Sales.vSalesByCategory
+AS
+SELECT      Soh.Totaldue,
+             Pc.Name AS 'Category',
+			 Ps.Name AS 'Subcategory',
+			 P.Name AS 'Product'
+FROM         Sales.SalesOrderHeader Soh
+             INNER JOIN Sales.SalesOrderDetail Sod ON Soh.SalesOrderID=Sod.SalesOrderID
+			 INNER JOIN Production.Product P ON Sod.ProductID=P.ProductID
+			 INNER JOIN Production.ProductSubcategory Ps ON P.ProductSubcategoryID=Ps.ProductSubcategoryID
+			 INNER JOIN Production.ProductCategory Pc ON Ps.ProductCategoryID=Pc.ProductCategoryID
+
+
+--DATA ROLLUP
+SELECT       Category,
+             Subcategory,
+			 Product,
+			 Sum(Totaldue) AS 'Totalsold'
+FROM         Sales.vSalesByCategory
+WHERE        Category='Clothing'
+GROUP BY     Category,
+             Subcategory,
+			 Product
+WITH ROLLUP
+ORDER BY     Category,
+			 Subcategory,
+			 Product
+
+			 
+SELECT       Category,
+             Subcategory,
+			 Product,
+			 Sum(Totaldue) AS 'Totalsold'
+FROM         Sales.vSalesByCategory
+GROUP BY     Category,
+             Subcategory,
+			 Product
+HAVING       Sum(TotalDue) > 10000000
+ORDER BY     Category,
+			 Subcategory,
+			 Product
+
+
+--USING CUBE
+SELECT       Category,
+             Subcategory,
+			 Product,
+			 Sum(Totaldue) AS 'Totalsold'
+FROM         Sales.vSalesByCategory
+--WHERE        Category='Clothing'
+GROUP BY     Category,
+             Subcategory,
+			 Product
+WITH CUBE
+ORDER BY     Category,
+			 Subcategory,
+			 Product
+
+SELECT       Category,
+             Subcategory,
+			 Product,
+			 Sum(Totaldue) AS 'Totalsold'
+FROM         Sales.vSalesByCategory
+WHERE        Category='Clothing'
+GROUP BY GROUPING SETS ((Category,Subcategory),
+             (Subcategory),
+			 (Product))
+ORDER BY     Category,
+			 Subcategory,
+
+
+--GROUPING ID
+SELECT       GROUPING_ID(Category,Subcategory,Product) AS 'TotalBitmap',
+             Category,
+             Subcategory,
+			 Product,
+			 Sum(Totaldue) AS 'Totalsold'
+FROM         Sales.vSalesByCategory
+--WHERE        Category='Clothing'
+GROUP BY     Category,
+             Subcategory,
+			 Product
+ORDER BY     Category,
+			 Subcategory,
+			 Product
+--USING COMMON TABLE EXPRESSIONS CTE
+WITH cteSalesDatum(TOTALSOLD,ORDERYEAR)
+AS 
+( 
+	SELECT     SUM(Soh.Totaldue) AS 'TOTALSOLD',
+				YEAR(Soh.Orderdate) AS 'ORDERYEAR'
+	FROM        Sales.SalesOrderHeader Soh 
+				INNER JOIN Sales.SalesTerritory St ON Soh.TerritoryID=St.TerritoryID
+	GROUP BY    YEAR(Soh.Orderdate)
+)
+SELECT * FROM cteSalesDatum
+
+	
+
+
+Select * from cteSalesDatum
+	
+--ORDER BY IS USED FOR SORTING DATA
+SELECT          FirstName,
+                LastName,
+				EmailPromotion
+FROM            Person.Person
+ORDER BY        FirstName ASC,
+                LastName ASC,
+				emailpromotion desc
+
+
+--TOP COMMAND IS USED TO SELECT A DESIGNATED NUMBER OF ROWS
+SELECT TOP 15.8 PERCENT FirstName,
+                LastName,
+				EmailPromotion
+FROM            Person.Person
+ORDER BY        FirstName ASC,
+                LastName ASC,
+				emailpromotion desc
+
+--RANKING FUNCTIONS
+SELECT          Name,
+				Listprice,
+				ROW_NUMBER() OVER (ORDER BY Listprice DESC) AS 'ROW_NUMBER',
+				RANK() OVER (ORDER BY Listprice DESC) AS 'RANK',
+				DENSE_RANK() OVER (ORDER BY Listprice DESC) AS 'DENSE_RANK',
+				NTILE(3) OVER (ORDER BY Listprice DESC) AS 'NTILE'
+FROM		    Production.Product
+WHERE           ProductSubcategoryID=1
+ORDER BY        ListPrice DESC;
+
+
+use  adventureworks2014
+
+--PAGING USING OFFSET AND FETCH
+--OFFSET IS FOR SKIPPING DATA 
+--FETCH IS FOR RETRIEVING DATA
+SELECT          ROW_NUMBER() OVER (ORDER BY NAME) AS 'ROWNUMBER', 
+				NAME,
+                ListPrice
+FROM            Production.Product
+ORDER BY        NAME
+OFFSET          100 ROWS
+FETCH           NEXT 100 ROWS ONLY;
+
+--DISTINCT 
+SELECT DISTINCT ROW_NUMBER() OVER (ORDER BY NAME) AS 'ROWNUMBER', 
+				NAME,
+                ListPrice
+FROM            Production.Product
+ORDER BY        NAME
+OFFSET          100 ROWS
+FETCH           NEXT 100 ROWS ONLY;
+
+--USING BUILT IN FUNCTIONS
+SELECT          FirstName,
+				LastName,
+				ISNULL(MiddleName,'Not Available') AS 'ISNULLMIDDLENAME',
+				COALESCE(MiddleName,'Not Available')AS 'COALSCENCEMIDDLENAME'
+FROM            Person.Person
+
+--DATE FUNCTIONS
+SELECT          MAX(Soh.Orderdate) AS 'MostRecentOrderDate',
+                YEAR(MAX(Soh.Orderdate)) AS 'MostrecentOrderYearFunction',
+				DATEPART(YEAR,MAX(Soh.Orderdate)) AS 'MostRecentOrderYearDatePart',
+				P.Firstname
+FROM            Sales.Salesorderheader as Soh 
+                INNER JOIN Sales.Customer Sc ON Soh.CustomerID=Sc.CustomerID
+				INNER JOIN Person.BusinessEntityContact Bec ON Sc.PersonID=Bec.PersonID
+				INNER JOIN Person.Person P ON Bec.BusinessentityID=P.BusinessentityID
+GROUP BY        P.FirstName
+
+
+--DATE DIFFERENCE TIME FUNCTIONS
+SELECT       	DATEDIFF(DAY,MAX(Soh.Orderdate), GETDATE()) AS 'Daysincelastorder'
+FROM            Sales.Salesorderheader as Soh   
+
+--CAST FUNCTION;USED TO CONVERT AN EXPRESSION FROM ONE DATATYPE TO ANOTHER
+SELECT CAST(25.23 AS DATETIME);          
+              
+SELECT CAST('HI' AS nvarchar); 
+
+SELECT CAST('10' AS INT) * 20 AS 'TOTALPRODUCT',
+       CONVERT(INT, '20') * 20 AS 'TOTALSUM'
+
+SELECT CONVERT (DATETIME, 25.23)
+
+SELECT * FROM Production.Product
+WHERE         ProductID LIKE '3%'
+
+SELECT        P.FIRSTNAME,
+              P.LASTNAME,
+			  S.SALESYTD,
+			  S.BUSINESSENTITYID
+FROM          Person.Person P 
+              INNER JOIN Sales.SalesPerson S ON P.BusinessEntityID=S.BusinessEntityID
+WHERE         CAST(CAST(S.SALESYTD AS INT)AS char(20)) LIKE '2%'
+
+--CONVERT FUNCTION;SAME AS CAST EXCEPT THAT IN THIS CASE THE DATATYPE COMES FIRST BEFORE THE EXPRESSION
+SELECT SUBSTRING (NAME,1,30) AS PRODUCTNAME,ListPrice
+FROM          Production.Product
+WHERE   CONVERT(INT, ListPrice) LIKE '3%'
+
+--ROUND FUNCTION;RETURNS A NUMERIC VALUE ROUNDED TO THE SPECIFIC LENGTH OR PRECISION
+SELECT ROUND(123.9985, 4),ROUND(123.8854, 3)
+SELECT ROUND(123.9985, 2),ROUND(123.8854, 2)
+
+--SUBSTRING:IT RETURNS PART OF A CHARACTER,A TEXT OR IMAGE EXPRESSION IN SQL SERVER
+--SYNTAX SUBSTRING(EXPRESSION,START,LENGTH)
+SELECT NAME, SUBSTRING(NAME ,1,1) AS INITIAL,
+ SUBSTRING(NAME,1,8) AS THIRDANDFOURTHCHARACTERS
+FROM sys.databases
+WHERE DATABASE_ID<5;
+
+SELECT NAME, SUBSTRING(NAME,2,3) AS INITIAL,
+             SUBSTRING(NAME,1,6) AS FULLNAME
+FROM SYS.DATABASES
+
+SELECT NAME, SUBSTRING(NAME,3,1) AS ORIGINAL,
+             SUBSTRING(NAME,2,3) AS FINAL
+FROM SYS.DATABASES
+
+--CASE EXPRESSIONS
+--It Evaluates a list of conditions and returns one of possible result expressions
+--The Simple Case expression
+--The Searched Case Expression
